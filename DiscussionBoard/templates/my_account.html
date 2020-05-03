@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Change password{% endblock %}
+{% block title %}My account{% endblock %}
 
 {% block breadcrumb %}
-  <li class="breadcrumb-item active">Change password</li>
+  <li class="breadcrumb-item active">My account</li>
 {% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
       <form method="post" novalidate>
         {% csrf_token %}
         {% include 'includes/form.html' %}
-        <button type="submit" class="btn btn-success">Change password</button>
+        <button type="submit" class="btn btn-success">Save changes</button>
       </form>
     </div>
   </div>
