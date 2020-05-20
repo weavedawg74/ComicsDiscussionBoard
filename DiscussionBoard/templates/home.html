@@ -7,6 +7,15 @@
 {% endblock %}
 
 {% block content %}
+  <form method="post" novalidate action=".">
+    {% csrf_token %}
+    {% include 'includes/form.html' %}
+    <input type="text" name="search" />
+    <button type="submit" class="btn btn-success">Search</button>
+  </form>
+  <p>Post value: {{ post_value }}</p>
+  <p>Context value: {{ context_value }}</p>
+  <br><br><br><br>
   <table class="table">
     <thead class="thead-inverse">
       <tr>

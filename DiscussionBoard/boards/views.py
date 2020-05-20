@@ -9,12 +9,45 @@ from django.urls import reverse
 
 from .forms import NewTopicForm, PostForm
 from .models import Board, Post, Topic
+import requests
 
 
-class BoardListView(ListView):
+#class BoardAPIView(APIView):   # <--- get data from an API call
+
+#    def get(self, request):
+        # return response
+
+#@api_view(['GET', 'POST'])
+# def api_route(request):
+#    ....
+
+
+
+class BoardListView(ListView):   # <-- get a collection of values from the database (Board table)
     model = Board
     context_object_name = 'boards'
     template_name = 'home.html'
+
+    # for filtering
+    # def get_queryset() # <--- use for filtering the results (filter the boards)
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        return query_set.filter(name__startswith='')
+
+    def get_context_data(self, **kwargs):  # <--- return a dictionary instead of just the query set
+        data = super().get_context_data(**kwargs)
+        data['context_value'] = 'CONTEXT VALUE'
+        return data
+
+    # def get(self, request)  # <-- use this to  handle a get request from start to finish
+
+
+    def post(self, request):
+        post_value =  request.POST.get("search")
+        boards = super().get_queryset()
+        # Not necessarily good structure, but API requests can be fired here
+        #response = response.get('https://api.shortboxed.com/comics/v1/new')
+        return render(request, self.template_name, {'boards': boards, 'post_value': post_value})
 
 
 class TopicListView(ListView):
@@ -120,3 +153,14 @@ class PostUpdateView(UpdateView):
         post.updated_at = timezone.now()
         post.save()
         return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
+
+
+def newreleases(request):
+    response = response.get('https://api.shortboxed.com/comics/v1/new')
+    api = response.json()
+    comicdata = api['comics']
+    for comic in comicdata:
+        print(comic['title'])
+    return render(request, 'home.html', {
+        'comicdata': comicdata
+    })

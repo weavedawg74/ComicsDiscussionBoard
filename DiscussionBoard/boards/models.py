@@ -1,11 +1,12 @@
 import math
-from markdown import markdown
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils.text import Truncator
-from django.utils.html import mark_safe
 
-# Create your models here.
+from django.contrib.auth.models import User
+from django.db import models
+from django.utils.html import mark_safe
+from django.utils.text import Truncator
+
+from markdown import markdown
+
 
 class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -24,8 +25,8 @@ class Board(models.Model):
 class Topic(models.Model):
     subject = models.CharField(max_length=255)
     last_updated = models.DateTimeField(auto_now_add=True)
-    board = models.ForeignKey(Board, related_name='topics')
-    starter = models.ForeignKey(User, related_name='topics')
+    board = models.ForeignKey(Board, related_name='topics', on_delete=models.CASCADE,)
+    starter = models.ForeignKey(User, related_name='topics', on_delete=models.CASCADE,)
     views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -53,11 +54,11 @@ class Topic(models.Model):
 
 class Post(models.Model):
     message = models.TextField(max_length=4000)
-    topic = models.ForeignKey(Topic, related_name='posts')
+    topic = models.ForeignKey(Topic, related_name='posts', on_delete=models.CASCADE,)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True)
-    created_by = models.ForeignKey(User, related_name='posts')
-    updated_by = models.ForeignKey(User, null=True, related_name='+')
+    created_by = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE,)
+    updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.CASCADE,)
 
     def __str__(self):
         truncated_message = Truncator(self.message)
