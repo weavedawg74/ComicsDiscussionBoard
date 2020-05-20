@@ -7,15 +7,15 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post" novalidate action=".">
-    {% csrf_token %}
-    {% include 'includes/form.html' %}
-    <input type="text" name="search" />
+  <p>Find the 1st appearance of a character by searching here:</p>
+  <form method="GET">
+    <input type="text" name="character" />
     <button type="submit" class="btn btn-success">Search</button>
   </form>
-  <p>Post value: {{ post_value }}</p>
-  <p>Context value: {{ context_value }}</p>
-  <br><br><br><br>
+  {% if chardata %}
+    <p>{{ character }} first appeared in {{ chardata.first_appeared_in_issue }}. Find out more at {{ chardata.api_detail_url }}</p>
+  {% endif %}
+  <p></p>
   <table class="table">
     <thead class="thead-inverse">
       <tr>

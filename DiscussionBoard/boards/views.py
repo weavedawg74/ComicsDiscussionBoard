@@ -11,18 +11,6 @@ from .forms import NewTopicForm, PostForm
 from .models import Board, Post, Topic
 import requests
 
-
-#class BoardAPIView(APIView):   # <--- get data from an API call
-
-#    def get(self, request):
-        # return response
-
-#@api_view(['GET', 'POST'])
-# def api_route(request):
-#    ....
-
-
-
 class BoardListView(ListView):   # <-- get a collection of values from the database (Board table)
     model = Board
     context_object_name = 'boards'
@@ -155,12 +143,11 @@ class PostUpdateView(UpdateView):
         return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
 
 
-def newreleases(request):
-    response = response.get('https://api.shortboxed.com/comics/v1/new')
-    api = response.json()
-    comicdata = api['comics']
-    for comic in comicdata:
-        print(comic['title'])
-    return render(request, 'home.html', {
-        'comicdata': comicdata
-    })
+def character(request):
+    chardata = {}
+    if 'character' in request.GET:
+        character = request.GET['character']
+        url = 'http://comicvine.gamespot.com/api/character/?api_key=340afe8dcda8eeec5bf1675ae3cdb06a6f565334&format=json&field_list=first_appeared_in_issue,api_detail_url&query=deadpool'
+        response = requests.get(url)
+        chardata = response.json()
+    return render(request, 'home.html', {'chardata': chardata})
