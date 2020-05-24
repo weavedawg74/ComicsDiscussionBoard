@@ -23,19 +23,37 @@ class BoardListView(ListView):   # <-- get a collection of values from the datab
         return query_set.filter(name__startswith='')
 
     def get_context_data(self, **kwargs):  # <--- return a dictionary instead of just the query set
-        data = super().get_context_data(**kwargs)
-        data['context_value'] = 'CONTEXT VALUE'
+        data = super(BoardListView, self).get_context_data(**kwargs)
+        data['search_expression'] = self.search_expression 
+        data['chardata'] = self.chardata
         return data
 
     # def get(self, request)  # <-- use this to  handle a get request from start to finish
+    def get(self, request, *args, **kwargs):
+        self.search_expression = request.GET.get('character')
+        if self.search_expression != None:
+            #url = 'https://randomuser.me/api/'
+            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+            url = 'https://comicvine.gamespot.com/api/characters/?api_key=340afe8dcda8eeec5bf1675ae3cdb06a6f565334&format=json&filter=name:deadpool'
+            response = requests.get(url, headers=headers)
+            print(response)
+            self.chardata = response.json()
+            print(self.chardata)
+           # self.chardata = { 'first_appeared_in_issue': '1' }
+        else:
+            print('NO API REQUEST')
+            self.chardata = { 'first_appeared_in_issue': '2' }
+        return super(BoardListView, self).get(request, *args, **kwargs)
 
 
-    def post(self, request):
-        post_value =  request.POST.get("search")
-        boards = super().get_queryset()
+
+
+    # def post(self, request):
+        # post_value =  request.POST.get("search")
+        # boards = super().get_queryset()
         # Not necessarily good structure, but API requests can be fired here
         #response = response.get('https://api.shortboxed.com/comics/v1/new')
-        return render(request, self.template_name, {'boards': boards, 'post_value': post_value})
+        # return render(request, self.template_name, {'boards': boards, 'post_value': post_value})
 
 
 class TopicListView(ListView):
@@ -141,13 +159,3 @@ class PostUpdateView(UpdateView):
         post.updated_at = timezone.now()
         post.save()
         return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
-
-
-def character(request):
-    chardata = {}
-    if 'character' in request.GET:
-        character = request.GET['character']
-        url = 'http://comicvine.gamespot.com/api/character/?api_key=340afe8dcda8eeec5bf1675ae3cdb06a6f565334&format=json&field_list=first_appeared_in_issue,api_detail_url&query=deadpool'
-        response = requests.get(url)
-        chardata = response.json()
-    return render(request, 'home.html', {'chardata': chardata})

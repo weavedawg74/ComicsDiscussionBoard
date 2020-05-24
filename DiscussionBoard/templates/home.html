@@ -7,14 +7,15 @@
 {% endblock %}
 
 {% block content %}
+  <h1>Search expression: {{search_expression}}</h1>
   <p>Find the 1st appearance of a character by searching here:</p>
-  <form method="GET">
-    <input type="text" name="character" />
+  <form method="get" action="/">
+    <input type="text" name="character">
     <button type="submit" class="btn btn-success">Search</button>
   </form>
-  {% if chardata %}
-    <p>{{ character }} first appeared in {{ chardata.first_appeared_in_issue }}. Find out more at {{ chardata.api_detail_url }}</p>
-  {% endif %}
+  
+    <p>{{ chardata.name }} has appeared in {{ chardata.count_of_issue_appearances }}. Find out more at {{ chardata.site_detail_url }}</p>
+  
   <p></p>
   <table class="table">
     <thead class="thead-inverse">
