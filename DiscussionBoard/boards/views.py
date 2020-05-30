@@ -10,6 +10,7 @@ from django.urls import reverse
 from .forms import NewTopicForm, PostForm
 from .models import Board, Post, Topic
 import requests
+import json, urllib
 
 class BoardListView(ListView):   # <-- get a collection of values from the database (Board table)
     model = Board
@@ -32,29 +33,18 @@ class BoardListView(ListView):   # <-- get a collection of values from the datab
     def get(self, request, *args, **kwargs):
         self.search_expression = request.GET.get('character')
         if self.search_expression != None:
-            #url = 'https://randomuser.me/api/'
             headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-            url = 'https://comicvine.gamespot.com/api/characters/?api_key=340afe8dcda8eeec5bf1675ae3cdb06a6f565334&format=json&filter=name:deadpool'
-            response = requests.get(url, headers=headers)
-            print(response)
-            self.chardata = response.json()
-            print(self.chardata)
-           # self.chardata = { 'first_appeared_in_issue': '1' }
+            url = 'https://comicvine.gamespot.com/api/characters/?api_key=340afe8dcda8eeec5bf1675ae3cdb06a6f565334&format=json&field_list=count_of_issue_appearances,site_detail_url,name,image&limit=1&filter=name:'+self.search_expression
+            response = urllib.request.urlopen(url)
+            self.chardata = json.loads(response.read())
+            charimage = self.chardata["results"][0]["image"]
+            charname = self.chardata["results"][0]["name"]
+            charappearances =self.chardata["results"][0]["count_of_issue_appearances"]
+            charurl = self.chardata["results"][0]["site_detail_url"]            
         else:
             print('NO API REQUEST')
             self.chardata = { 'first_appeared_in_issue': '2' }
         return super(BoardListView, self).get(request, *args, **kwargs)
-
-
-
-
-    # def post(self, request):
-        # post_value =  request.POST.get("search")
-        # boards = super().get_queryset()
-        # Not necessarily good structure, but API requests can be fired here
-        #response = response.get('https://api.shortboxed.com/comics/v1/new')
-        # return render(request, self.template_name, {'boards': boards, 'post_value': post_value})
-
 
 class TopicListView(ListView):
     model = Topic

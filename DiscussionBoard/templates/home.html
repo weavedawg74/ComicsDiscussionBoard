@@ -7,16 +7,16 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Search expression: {{search_expression}}</h1>
-  <p>Find the 1st appearance of a character by searching here:</p>
+  <p><strong>Find the number of appearances of a character by searching here:</strong></p>
   <form method="get" action="/">
-    <input type="text" name="character">
-    <button type="submit" class="btn btn-success">Search</button>
+    <input type="text" class="form-control" name="character">
+    <br>
+    <button type="submit" class="btn btn-success btn-block">Search</button>
+    <br>
   </form>
-  
-    <p>{{ chardata.name }} has appeared in {{ chardata.count_of_issue_appearances }}. Find out more at {{ chardata.site_detail_url }}</p>
-  
-  <p></p>
+    {% if chardata.results.0.name %}
+      <p><img src="{{ chardata.results.0.image.thumb_url }}"> {{ chardata.results.0.name }} has appeared in {{ chardata.results.0.count_of_issue_appearances }} comics. Find out more at <a href={{ chardata.results.0.site_detail_url }}>{{ chardata.results.0.site_detail_url }}</a></p>
+    {% endif %}
   <table class="table">
     <thead class="thead-inverse">
       <tr>
