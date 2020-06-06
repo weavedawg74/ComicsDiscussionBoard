@@ -1,1 +1,1 @@
-web: gunicorn ComicsDiscussionBoard.wsgi
+web: gunicorn DiscussionBoard.wsgi
